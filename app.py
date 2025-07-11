@@ -72,54 +72,31 @@ if st.button("🚀 Generate Text", type="primary"):
     else:
         with st.spinner("Generating response..."):
             try:
-                # Add this before the InferenceClient initialization
-                st.write(f"🔍 **Debug Info:**")
-                st.write(f"- Token starts with: {hf_token[:10]}...")
-                st.write(f"- Token length: {len(hf_token)}")
-                st.write(f"- Model: {model}")
-                st.write(f"- Provider: featherless-ai")
-
-                # Test model access first
-                try:
-                    # Try without provider first
-                    test_client = InferenceClient(model=model, token=hf_token)
-                    st.success("✅ Direct HF access successful")
-                except Exception as e:
-                    st.warning(f"⚠️ Direct HF access failed: {e}")
-
-                # Initialize client
+                # Use direct HF inference instead of provider
                 client = InferenceClient(
-                    provider="featherless-ai",
-                    api_key=hf_token,
+                    model=model,
+                    token=hf_token,
                 )
                 
-                # Generate text - Updated to handle response properly
+                # Generate text
                 response = client.text_generation(
                     user_query,
-                    model=model,
                     max_new_tokens=max_tokens,
                     temperature=temperature
                 )
                 
-                # Handle different response formats
+                # Handle response (your existing code)
                 if isinstance(response, str):
                     result = response
                 elif isinstance(response, dict):
-                    # Try different possible keys
                     if 'generated_text' in response:
                         result = response['generated_text']
-                    elif 'text' in response:
-                        result = response['text']
-                    elif 'content' in response:
-                        result = response['content']
                     else:
-                        # If none of the expected keys exist, show the raw response
                         result = str(response)
-                        st.warning("⚠️ Unexpected response format. Showing raw response.")
                 else:
                     result = str(response)
                 
-                # Display results
+                # Display results (your existing display code)
                 st.success("✅ Generation completed!")
                 
                 col1, col2 = st.columns([2, 1])
